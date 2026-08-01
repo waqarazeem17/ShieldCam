@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Exposed paths for the FileProvider used by the share sheet. -->
+<paths>
+    <external-files-path
+        name="exports"
+        path="ShieldCam/Exports/" />
+    <external-files-path
+        name="images"
+        path="ShieldCam/Images/" />
+</paths>

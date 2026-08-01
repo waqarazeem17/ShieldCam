@@ -95,14 +95,15 @@ object DetectionEngine {
         if (!keyguardVisible) return
         interactionArmed = true
         cancelCheck()
-        checkRunnable = Runnable {
+        val runnable = Runnable {
             checkRunnable = null
             if (interactionArmed && keyguardVisible) {
                 interactionArmed = false
                 handleFailedAttempt("accessibility")
             }
         }
-        handler.postDelayed(checkRunnable, KEYGUARD_CONFIRM_MS)
+        checkRunnable = runnable
+        handler.postDelayed(runnable, KEYGUARD_CONFIRM_MS)
     }
 
     // -----------------------------------------------------------------

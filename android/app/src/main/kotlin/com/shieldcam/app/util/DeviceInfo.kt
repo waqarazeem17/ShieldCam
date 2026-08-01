@@ -1,7 +1,9 @@
 package com.shieldcam.app.util
 
 import android.Manifest
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.BatteryManager
@@ -35,7 +37,7 @@ object DeviceInfo {
     fun isAccessibilityEnabled(context: Context, serviceClass: Class<*>): Boolean {
         val am = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
         val expected = context.packageName + "/" + serviceClass.canonicalName
-        return am.getEnabledAccessibilityServiceList(AccessibilityManager.FEEDBACK_ALL_MASK)
+        return am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
             .any { it.resolveInfo.serviceInfo?.packageName == context.packageName }
             .also { }
             .let { enabled ->
@@ -57,7 +59,7 @@ object DeviceInfo {
 
     fun isDeviceAdminActive(context: Context): Boolean {
         val dpm = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        return dpm.isAdminActive(context.packageName)
+        return dpm.isAdminActive(ComponentName(context, com.shieldcam.app.admin.ShieldCamDeviceAdminReceiver::class.java))
     }
 
     fun hasPermission(context: Context, permission: String): Boolean {

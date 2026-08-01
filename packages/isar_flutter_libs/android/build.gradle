@@ -1,0 +1,19 @@
+group 'dev.isar.isar_flutter_libs'
+version '1.0'
+
+apply plugin: 'com.android.library'
+
+android {
+    // Patched for modern AGP (8.x): namespace is mandatory.
+    namespace 'dev.isar.isar_flutter_libs'
+
+    compileSdk 36
+
+    defaultConfig {
+        minSdk 24
+    }
+}
+
+dependencies {
+    implementation "androidx.startup:startup-runtime:1.1.1"
+}

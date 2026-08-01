@@ -7,4 +7,5 @@
     <string name="monitoring_notification_channel_desc">Status notification shown while ShieldCam is actively monitoring the lock screen.</string>
     <string name="monitoring_notification_title">ShieldCam is monitoring</string>
     <string name="monitoring_notification_text">Failed unlock attempts will be recorded on this device.</string>
+    <string name="file_provider_authority">com.shieldcam.app.fileprovider</string>
 </resources>

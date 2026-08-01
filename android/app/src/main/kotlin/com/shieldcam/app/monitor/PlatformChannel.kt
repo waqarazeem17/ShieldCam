@@ -1,13 +1,12 @@
 package com.shieldcam.app.monitor
 
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import android.view.accessibility.AccessibilityManager
-import androidx.core.content.ContextCompat
 import com.shieldcam.app.admin.ShieldCamDeviceAdminReceiver
 import com.shieldcam.app.util.AppStorage
 import com.shieldcam.app.util.DeviceInfo
@@ -15,8 +14,8 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.PlatformException
 import org.json.JSONObject
+import java.io.File
 
 /**
  * Bridges the native detection layer and the Flutter engine.
@@ -140,6 +139,15 @@ object PlatformChannel {
                         result.error("BAD_ARG", "id required", null)
                     }
                 }
+                "shareFiles" -> {
+                    val paths = call.argument<List<String>>("paths") ?: emptyList()
+                    if (paths.isEmpty) {
+                        result.error("BAD_ARG", "paths required", null)
+                    } else {
+                        shareFiles(appContext, paths)
+                        result.success(true)
+                    }
+                }
                 else -> result.notImplemented()
             }
         } catch (e: Exception) {
@@ -149,8 +157,8 @@ object PlatformChannel {
     }
 
     private fun deviceInfoMap(context: Context): Map<String, Any> {
-        val am = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-        val services = am.getEnabledAccessibilityServiceList(AccessibilityManager.FEEDBACK_ALL_MASK)
+        val am = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as android.view.accessibility.AccessibilityManager
+        val services = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
             .any { it.resolveInfo.serviceInfo?.packageName == context.packageName }
         val flat = Settings.Secure.getString(
             context.contentResolver,
@@ -179,5 +187,35 @@ object PlatformChannel {
 
     fun emitLockState(locked: Boolean) {
         eventSink?.success(mapOf("type" to "lockState", "locked" to locked))
+    }
+
+    /** Shares files through the Android share sheet using a FileProvider. */
+    private fun shareFiles(context: Context, paths: List<String>) {
+        val uris = paths.mapNotNull { path ->
+            val file = File(path)
+            if (!file.exists()) {
+                null
+            } else {
+                try {
+                    androidx.core.content.FileProvider.getUriForFile(
+                        context,
+                        context.getString(com.shieldcam.app.R.string.file_provider_authority),
+                        file,
+                    )
+                } catch (_: Exception) {
+                    null
+                }
+            }
+        }
+        if (uris.isEmpty()) return
+
+        val send = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+            type = if (uris.size == 1) "image/jpeg" else "*/*"
+            putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uris))
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        val chooser = Intent.createChooser(send, "Share ShieldCam export")
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(chooser)
     }
 }
