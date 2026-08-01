@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ShieldCam</string>
+    <string name="accessibility_service_label">ShieldCam monitoring</string>
+    <string name="accessibility_service_description">ShieldCam watches the lock screen to detect failed unlock attempts. It only observes when the lock screen is shown or dismissed; it never reads PINs, passwords or patterns, and nothing ever leaves your device.</string>
+    <string name="monitoring_notification_channel">ShieldCam Monitoring</string>
+    <string name="monitoring_notification_channel_desc">Status notification shown while ShieldCam is actively monitoring the lock screen.</string>
+    <string name="monitoring_notification_title">ShieldCam is monitoring</string>
+    <string name="monitoring_notification_text">Failed unlock attempts will be recorded on this device.</string>
+</resources>

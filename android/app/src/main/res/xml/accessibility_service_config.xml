@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ShieldCam accessibility service configuration.
+
+  The service observes window-state events so it can tell when the Android
+  lock screen (keyguard) is shown and when it is dismissed. While the keyguard
+  remains visible after user interaction, ShieldCam infers a failed unlock
+  attempt and captures evidence. It never reads credentials and it never
+  interacts with protected UI.
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeViewClicked|typeViewTextChanged|typeWindowContentChanged|typeWindowsChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagReportViewIds|flagIncludeNotImportantViews"
+    android:canRetrieveWindowContent="true"
+    android:description="@string/accessibility_service_description"
+    android:notificationTimeout="50" />
