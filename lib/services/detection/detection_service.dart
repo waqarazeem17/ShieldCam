@@ -71,17 +71,28 @@ class DetectionService {
   IntrusionEvent? _parseNativeEvent(String json) {
     try {
       final map = jsonDecode(json) as Map<String, dynamic>;
+
+      final tsValue = map['timestamp'];
+      final DateTime timestamp;
+      if (tsValue is int) {
+        timestamp = DateTime.fromMillisecondsSinceEpoch(tsValue);
+      } else if (tsValue is num) {
+        timestamp = DateTime.fromMillisecondsSinceEpoch(tsValue.round());
+      } else {
+        timestamp = DateTime.tryParse((tsValue as String?) ?? '') ??
+            DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch);
+      }
+
       return IntrusionEvent()
         ..uuid = (map['id'] as String?) ?? _uuid()
-        ..timestamp = DateTime.tryParse((map['timestamp'] as String?) ?? '') ??
-            DateTime.fromMillisecondsSinceEpoch((map['timestamp'] as int?) ?? DateTime.now().millisecondsSinceEpoch)
-        ..attemptCount = (map['attemptCount'] as int?) ?? 1
-        ..batteryLevel = map['batteryLevel'] as int?
+        ..timestamp = timestamp
+        ..attemptCount = (map['attemptCount'] as num?)?.toInt() ?? 1
+        ..batteryLevel = (map['batteryLevel'] as num?)?.toInt()
         ..batteryCharging = (map['batteryCharging'] as bool?) ?? false
         ..deviceModel = (map['deviceModel'] as String?) ?? ''
         ..manufacturer = (map['manufacturer'] as String?) ?? ''
         ..androidVersion = (map['androidVersion'] as String?) ?? ''
-        ..sdkInt = (map['sdkInt'] as int?) ?? 0
+        ..sdkInt = (map['sdkInt'] as num?)?.toInt() ?? 0
         ..frontImagePath = (map['frontImage'] as String?) ?? ''
         ..rearImagePath = (map['rearImage'] as String?) ?? ''
         ..latitude = (map['latitude'] as num?)?.toDouble()

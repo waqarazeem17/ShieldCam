@@ -34,6 +34,8 @@ class CameraCaptureManager(private val context: Context) {
 
     private var handlerThread: HandlerThread? = null
     private var handler: Handler? = null
+    private var callbackThread: HandlerThread? = null
+    private var callbackHandler: Handler? = null
 
     /** Result of a capture attempt. */
     data class Result(
@@ -107,10 +109,14 @@ class CameraCaptureManager(private val context: Context) {
             } else {
                 done.countDown()
             }
-        }, handler)
+        }, callbackHandler)
+
+        var openedCamera: CameraDevice? = null
+        var openedSession: CameraCaptureSession? = null
 
         manager.openCamera(cameraId, object : CameraDevice.StateCallback() {
             override fun onOpened(camera: CameraDevice) {
+                openedCamera = camera
                 try {
                     val builder = camera.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
                     builder.addTarget(imageReader.surface)
@@ -123,6 +129,7 @@ class CameraCaptureManager(private val context: Context) {
                         listOf(imageReader.surface),
                         object : CameraCaptureSession.StateCallback() {
                             override fun onConfigured(session: CameraCaptureSession) {
+                                openedSession = session
                                 try {
                                     session.capture(builder.build(), object : CameraCaptureSession.CaptureCallback() {
                                         override fun onCaptureCompleted(
@@ -132,7 +139,7 @@ class CameraCaptureManager(private val context: Context) {
                                         ) {
                                             // JPEG delivery is signalled by the ImageReader listener.
                                         }
-                                    }, handler)
+                                    }, callbackHandler)
                                 } catch (e: CameraAccessException) {
                                     failure = e
                                     done.countDown()
@@ -146,7 +153,7 @@ class CameraCaptureManager(private val context: Context) {
                                 closeAll(session, camera, imageReader)
                             }
                         },
-                        handler,
+                        callbackHandler,
                     )
                 } catch (e: Exception) {
                     failure = e
@@ -169,13 +176,27 @@ class CameraCaptureManager(private val context: Context) {
                 camera.close()
                 imageReader.close()
             }
-        }, handler)
+        }, callbackHandler)
 
         // Time-box the whole capture to avoid blocking the service.
         if (!done.await(8, TimeUnit.SECONDS)) {
+            // Close whatever is still open so the camera is released.
+            try { openedSession?.close() } catch (_: Exception) {}
+            openedCamera?.close()
+            imageReader.close()
             throw IllegalStateException("Camera capture timed out for $cameraId")
         }
-        if (failure != null) throw failure!!
+        if (failure != null) {
+            try { openedSession?.close() } catch (_: Exception) {}
+            openedCamera?.close()
+            imageReader.close()
+            throw failure!!
+        }
+
+        // Success: release the camera, session and reader.
+        try { openedSession?.close() } catch (_: Exception) {}
+        openedCamera?.close()
+        imageReader.close()
 
         return file.absolutePath
     }
@@ -227,12 +248,19 @@ class CameraCaptureManager(private val context: Context) {
             handlerThread = HandlerThread("shieldcam-camera").also { it.start() }
             handler = Handler(handlerThread!!.looper)
         }
+        if (callbackThread == null) {
+            callbackThread = HandlerThread("shieldcam-camera-callback").also { it.start() }
+            callbackHandler = Handler(callbackThread!!.looper)
+        }
     }
 
     fun dispose() {
         handlerThread?.quitSafely()
         handlerThread = null
         handler = null
+        callbackThread?.quitSafely()
+        callbackThread = null
+        callbackHandler = null
     }
 
     companion object {

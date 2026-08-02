@@ -117,7 +117,10 @@ object DetectionEngine {
             // Successful unlock: end the current attempt session.
             onKeyguardHidden()
         }
-        sink?.onLockStateChanged(locked)
+        // EventChannel.success must be called on the main thread; the watchdog
+        // may invoke this from a background handler thread.
+        val state = locked
+        handler.post { sink?.onLockStateChanged(state) }
     }
 
     /** Manual / debug trigger that runs the full evidence pipeline. */
@@ -171,7 +174,8 @@ object DetectionEngine {
 
                     AppStorage.writePendingEvent(event)
                     AppStorage.writeLog("Event ${event.optString("id")} persisted locally")
-                    sink?.onDetectionEvent(event)
+                    // EventChannel.success must be called on the main thread.
+                    handler.post { sink?.onDetectionEvent(event) }
                 } catch (e: Exception) {
                     AppStorage.writeLog("Failed to build event: ${e.message}")
                 } finally {

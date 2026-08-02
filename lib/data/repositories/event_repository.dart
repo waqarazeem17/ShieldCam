@@ -47,17 +47,23 @@ class EventRepository {
   }
 
   Future<List<IntrusionEvent>> getAll({int? limit, int offset = 0}) async {
-    var q = _isar.intrusionEvents.where().sortByTimestampDesc();
-    if (limit != null) q = q.limit(limit).offset(offset);
+    final q = _isar.intrusionEvents.where().sortByTimestampDesc();
+    if (offset > 0 && limit != null) {
+      return q.offset(offset).limit(limit).findAll();
+    }
+    if (offset > 0) {
+      return q.offset(offset).findAll();
+    }
+    if (limit != null) {
+      return q.limit(limit).findAll();
+    }
     return q.findAll();
   }
 
   Future<List<IntrusionEvent>> getByDateRange(DateTime from, DateTime to) {
     return _isar.intrusionEvents
         .where()
-        .timestampGreaterThan(from, include: true)
-        .and()
-        .timestampLessThan(to, include: true)
+        .timestampBetween(from, to)
         .sortByTimestampDesc()
         .findAll();
   }
@@ -122,13 +128,21 @@ class EventRepository {
     DateTime? to,
     bool newestFirst = true,
     int? limit,
-  }) {
-    var q = _isar.intrusionEvents.where().filter();
-    if (from != null) q = q.timestampGreaterThan(from, include: true);
-    if (to != null) q = q.timestampLessThan(to, include: true);
-    var sorted = newestFirst ? q.sortByTimestampDesc() : q;
-    if (limit != null) sorted = sorted.limit(limit);
-    return sorted.findAll();
+  }) async {
+    var all = await getAll();
+    if (from != null) {
+      all = all.where((e) => !e.timestamp.isBefore(from)).toList();
+    }
+    if (to != null) {
+      all = all.where((e) => !e.timestamp.isAfter(to)).toList();
+    }
+    if (!newestFirst) {
+      all = all.reversed.toList();
+    }
+    if (limit != null) {
+      all = all.take(limit).toList();
+    }
+    return all;
   }
 
   /// Fast text search over local event fields. The result set is small enough

@@ -141,7 +141,7 @@ object PlatformChannel {
                 }
                 "shareFiles" -> {
                     val paths = call.argument<List<String>>("paths") ?: emptyList()
-                    if (paths.isEmpty) {
+                    if (paths.isEmpty()) {
                         result.error("BAD_ARG", "paths required", null)
                     } else {
                         shareFiles(appContext, paths)
