@@ -53,7 +53,7 @@ class AboutScreen extends StatelessWidget {
                   _Row(label: 'Monitoring', value: 'Lock screen detection'),
                   _Row(label: 'Evidence', value: 'Photos + location'),
                   _Row(label: 'Storage', value: 'On-device only'),
-                  _Row(label: 'License', value: 'MIT License'),
+                  _Row(label: 'License', value: 'Apache-2.0'),
                 ],
               ),
             ),

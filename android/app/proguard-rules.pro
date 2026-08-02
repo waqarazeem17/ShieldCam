@@ -3,8 +3,6 @@
 -keep class com.shieldcam.app.** { *; }
 
 # Keep Kotlin metadata required by reflection-free serialization.
--keep class * {
-    com.shieldcam.app.models.**;
-}
+-keep class com.shieldcam.app.models.** { *; }
 
 -dontwarn kotlinx.serialization.**
