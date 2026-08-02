@@ -84,6 +84,7 @@ class DashboardController extends StateNotifier<DashboardState> {
     _storage = _ref.read(storageServiceProvider);
     _detection = _ref.read(detectionServiceProvider);
     _sub = _detection.onEvent.listen((_) => refresh());
+    _watch = _repository.watchAll().listen((_) => refresh());
     refresh();
   }
 
@@ -93,6 +94,7 @@ class DashboardController extends StateNotifier<DashboardState> {
   late final StorageService _storage;
   late final DetectionService _detection;
   late final StreamSubscription<IntrusionEvent> _sub;
+  late final StreamSubscription<List<IntrusionEvent>> _watch;
 
   Future<void> refresh() async {
     try {
@@ -149,6 +151,7 @@ class DashboardController extends StateNotifier<DashboardState> {
   @override
   void dispose() {
     _sub.cancel();
+    _watch.cancel();
     super.dispose();
   }
 }

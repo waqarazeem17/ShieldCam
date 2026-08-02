@@ -92,12 +92,16 @@ object DetectionEngine {
      * when it elapses, the interaction is treated as a failed unlock attempt.
      */
     fun onKeyguardInteraction() {
-        if (!keyguardVisible) return
+        // The keyguard may already be showing when the accessibility service
+        // connects (or rebinds), so no keyguard window-state event is emitted.
+        // Rely on the watchdog's lock state as a fallback signal that the
+        // lock screen is up.
+        if (!keyguardVisible && !screenLocked) return
         interactionArmed = true
         cancelCheck()
         val runnable = Runnable {
             checkRunnable = null
-            if (interactionArmed && keyguardVisible) {
+            if (interactionArmed && (keyguardVisible || screenLocked)) {
                 interactionArmed = false
                 handleFailedAttempt("accessibility")
             }
