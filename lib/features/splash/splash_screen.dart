@@ -1,13 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shieldcam/core/providers/providers.dart';
 import 'package:shieldcam/navigation/app_router.dart';
-import 'package:shieldcam/services/detection/detection_service.dart';
 import 'package:shieldcam/services/logging/app_logger.dart';
-import 'package:shieldcam/services/monitoring/monitoring_service.dart';
-import 'package:shieldcam/services/settings/settings_service.dart';
-import 'package:shieldcam/services/storage/storage_service.dart';
 
 /// Bootstraps the app and routes to onboarding, app-lock or the home shell.
 class SplashScreen extends ConsumerStatefulWidget {
@@ -66,7 +64,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     if (!mounted) return;
 
     final settings = ref.read(settingsServiceProvider);
-    final locked = await settings.appLockEnabled && await settings.hasPin();
+    final locked = (await settings.getSettings()).appLockEnabled &&
+        await settings.hasPin();
 
     final target = !onboarded
         ? AppRoutes.onboarding

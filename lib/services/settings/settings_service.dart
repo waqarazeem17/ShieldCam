@@ -14,9 +14,7 @@ class SettingsService {
   SettingsService(this._repository);
 
   final SettingsRepository _repository;
-  final _secure = const FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-  );
+  final _secure = const FlutterSecureStorage();
 
   static const _pinHashKey = 'app_lock_pin_hash';
   static const _pinSaltKey = 'app_lock_pin_salt';

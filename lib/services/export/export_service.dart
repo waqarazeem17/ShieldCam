@@ -9,21 +9,18 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:shieldcam/core/errors/app_exception.dart';
 import 'package:shieldcam/core/utils/app_folders.dart';
 import 'package:shieldcam/core/utils/date_time_utils.dart';
-import 'package:shieldcam/data/repositories/event_repository.dart';
 import 'package:shieldcam/models/intrusion_event.dart';
 import 'package:shieldcam/services/logging/app_logger.dart';
 
 /// Builds ZIP archives and PDF reports for one or more events.
 class ExportService {
-  ExportService(this._repository);
-
-  final EventRepository _repository;
+  ExportService();
 
   /// Exports [events] to a ZIP containing the evidence images plus a PDF
   /// report and a machine-readable metadata.json. Returns the file path.
   Future<File> exportZip(List<IntrusionEvent> events, {String? name}) async {
     if (events.isEmpty) {
-      throw const AppException('Nothing to export');
+      throw AppException('Nothing to export');
     }
 
     final archive = Archive();
@@ -58,9 +55,6 @@ class ExportService {
     final stamp = DateTimeUtils.eventFilename(DateTime.now());
     final file = File(p.join(dir.path, '${name ?? 'shieldcam_export'}_$stamp.zip'));
     final output = ZipEncoder().encode(archive);
-    if (output == null) {
-      throw const AppException('Failed to create archive');
-    }
     await file.writeAsBytes(output, flush: true);
     AppLogger.i('Export created: ${file.path} (${file.lengthSync()} bytes)');
     return file;
@@ -110,7 +104,7 @@ class ExportService {
               e.hasFrontImage
                   ? 'Front camera'
                   : 'Front camera: no image was captured',
-              style: const pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
             ),
             if (e.hasFrontImage) _image(e.frontImagePath),
             pw.SizedBox(height: 12),
@@ -118,7 +112,7 @@ class ExportService {
               e.hasRearImage
                   ? 'Rear camera'
                   : 'Rear camera: no image was captured',
-              style: const pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
             ),
             if (e.hasRearImage) _image(e.rearImagePath),
             pw.SizedBox(height: 16),
@@ -141,7 +135,7 @@ class ExportService {
         children: [
           pw.SizedBox(
             width: 90,
-            child: pw.Text(label, style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+            child: pw.Text(label, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
           ),
           pw.Expanded(child: pw.Text(value)),
         ],

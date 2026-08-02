@@ -70,15 +70,18 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
             onPressed: () => controller.setGridView(!state.gridView),
           ),
         ],
-        bottom: _FilterBar(
-          state: state,
-          onSortChanged: controller.setSort,
-          onOpenFilters: () => _openFilters(context, state, controller),
-          hasActiveFilters: state.query.isNotEmpty ||
-              state.fromDate != null ||
-              state.year != null ||
-              state.onlyWithLocation,
-          onClear: controller.clearFilters,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: _FilterBar(
+            state: state,
+            onSortChanged: controller.setSort,
+            onOpenFilters: () => _openFilters(context, state, controller),
+            hasActiveFilters: state.query.isNotEmpty ||
+                state.fromDate != null ||
+                state.year != null ||
+                state.onlyWithLocation,
+            onClear: controller.clearFilters,
+          ),
         ),
       ),
       body: state.loading
@@ -177,7 +180,6 @@ class _FilterBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: Row(
@@ -234,9 +236,9 @@ class _Chip extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 label,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: active ? scheme.onPrimaryContainer : scheme.onSurfaceVariant,
-                ),
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: active ? scheme.onPrimaryContainer : scheme.onSurfaceVariant,
+                    ),
               ),
             ],
           ),
@@ -255,7 +257,6 @@ class _ListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final preview = event.hasFrontImage ? event.frontImagePath : (event.hasRearImage ? event.rearImagePath : null);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -269,7 +270,7 @@ class _ListTile extends StatelessWidget {
               SizedBox(
                 width: 72,
                 height: 72,
-                child: EventImageTile(event: event, onTap: onTap, square: true),
+                child: EventImageTile(event: event, onTap: onTap, thumbnailOnly: true),
               ),
               const SizedBox(width: 16),
               Expanded(

@@ -206,7 +206,6 @@ class _DateButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return OutlinedButton.icon(
       onPressed: onTap,
       icon: Icon(icon, size: 18),

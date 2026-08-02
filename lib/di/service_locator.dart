@@ -50,7 +50,7 @@ Future<void> bootstrapDatabase() async {
       () => StorageService(locator<EventRepository>()),
     )
     ..registerLazySingleton<ExportService>(
-      () => ExportService(locator<EventRepository>()),
+      () => ExportService(),
     )
     ..registerLazySingleton<LocationService>(LocationService.new)
     ..registerLazySingleton<ThumbnailService>(ThumbnailService.new);

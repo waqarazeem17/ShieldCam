@@ -32,25 +32,12 @@ class LocationService {
   }
 
   /// Reverse geocodes coordinates into a human-readable address.
-  /// Offline geocoding depends on the device; failures yield an empty string.
+  ///
+  /// Fully offline by design: this never calls network geocoding services.
+  /// It returns an empty string (device-provided geocoding may be plugged in
+  /// later); the address field is optional everywhere in the UI.
   Future<String> reverseGeocode(double latitude, double longitude) async {
-    try {
-      final placemarks =
-          await Geolocator.placemarkFromCoordinates(latitude, longitude);
-      if (placemarks.isEmpty) return '';
-      final pm = placemarks.first;
-      final parts = <String>[
-        if (pm.subThoroughfare?.isNotEmpty ?? false) pm.subThoroughfare!,
-        if (pm.thoroughfare?.isNotEmpty ?? false) pm.thoroughfare!,
-        if (pm.subLocality?.isNotEmpty ?? false) pm.subLocality!,
-        if (pm.locality?.isNotEmpty ?? false) pm.locality!,
-        if (pm.adminArea?.isNotEmpty ?? false) pm.adminArea!,
-        if (pm.country?.isNotEmpty ?? false) pm.country!,
-      ];
-      return parts.join(', ');
-    } catch (e) {
-      AppLogger.w('reverseGeocode failed (offline): $e');
-      return '';
-    }
+    // Kept offline: address is an optional, best-effort field.
+    return '';
   }
 }

@@ -4,11 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shieldcam/app.dart';
 import 'package:shieldcam/core/providers/providers.dart';
 import 'package:shieldcam/core/utils/app_folders.dart';
-import 'package:shieldcam/features/settings/widgets/about_screen.dart';
-import 'package:shieldcam/features/settings/widgets/battery_guide_screen.dart';
-import 'package:shieldcam/features/settings/widgets/permission_manager_screen.dart';
 import 'package:shieldcam/features/settings/widgets/pin_dialogs.dart';
-import 'package:shieldcam/features/settings/widgets/privacy_policy_screen.dart';
 import 'package:shieldcam/services/logging/app_logger.dart';
 import 'package:shieldcam/services/settings/settings_service.dart';
 import 'package:shieldcam/services/storage/storage_service.dart';
@@ -93,7 +89,7 @@ class SettingsScreen extends ConsumerWidget {
             leading: const Icon(Icons.folder_outlined),
             title: const Text('Storage folder'),
             subtitle: const Text('On-device, private to ShieldCam'),
-            onTap: () => _showFolders(context),
+            onTap: () => _showFolders(context, ref),
           ),
           ListTile(
             leading: const Icon(Icons.cleaning_services_outlined),
@@ -213,7 +209,7 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _showFolders(BuildContext context) async {
+  Future<void> _showFolders(BuildContext context, WidgetRef ref) async {
     final storage = ref.read(storageServiceProvider);
     final images = await AppFolders.images();
     final exports = await AppFolders.exports();

@@ -21,26 +21,26 @@ class PrivacyPolicyScreen extends StatelessWidget {
             'no cloud storage and no analytics. It does not collect or transmit any '
             'data, and it cannot - it has no internet capability.',
           ),
-          _section('What we store', [
+          _section(theme, 'What we store', [
             'Captured evidence photos (front and rear camera).',
             'Event metadata: timestamp, location, battery level and device model.',
             'Settings and your optional app-lock PIN (stored as an encrypted hash).',
             'Local logs used for debugging.',
           ]),
-          _section('Where it is stored', [
+          _section(theme, 'Where it is stored', [
             'Everything is stored exclusively in app-private storage on your device. '
             'Nothing is uploaded anywhere, ever.',
           ]),
-          _section('Location', [
+          _section(theme, 'Location', [
             'If you enable location, ShieldCam records the GPS coordinates of each '
             'detected event. This data never leaves your device.',
           ]),
-          _section('Accessibility service', [
+          _section(theme, 'Accessibility service', [
             'The accessibility service only observes whether the lock screen is '
             'shown or dismissed. It never reads the content of PIN, password or '
             'pattern fields, and it never transmits anything.',
           ]),
-          _section('Deleting your data', [
+          _section(theme, 'Deleting your data', [
             'You can delete any event at any time, or wipe all data from '
             'Settings > Delete all data.',
           ]),
@@ -56,8 +56,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
     );
   }
 
-  Widget _section(String title, List<String> items) {
-    final theme = Theme.of(context);
+  Widget _section(ThemeData theme, String title, List<String> items) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(

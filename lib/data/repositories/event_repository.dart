@@ -55,9 +55,9 @@ class EventRepository {
   Future<List<IntrusionEvent>> getByDateRange(DateTime from, DateTime to) {
     return _isar.intrusionEvents
         .where()
-        .timestampGreaterThanOrEqualTo(from)
+        .timestampGreaterThan(from, include: true)
         .and()
-        .timestampLessThanOrEqualTo(to)
+        .timestampLessThan(to, include: true)
         .sortByTimestampDesc()
         .findAll();
   }
@@ -81,7 +81,7 @@ class EventRepository {
     final start = DateTimeUtils.startOfDay(DateTime.now());
     return _isar.intrusionEvents
         .where()
-        .timestampGreaterThanOrEqualTo(start)
+        .timestampGreaterThan(start, include: true)
         .count();
   }
 
@@ -89,7 +89,7 @@ class EventRepository {
     final start = DateTimeUtils.startOfWeek(DateTime.now());
     return _isar.intrusionEvents
         .where()
-        .timestampGreaterThanOrEqualTo(start)
+        .timestampGreaterThan(start, include: true)
         .count();
   }
 
@@ -97,14 +97,14 @@ class EventRepository {
     final start = DateTimeUtils.startOfMonth(DateTime.now());
     return _isar.intrusionEvents
         .where()
-        .timestampGreaterThanOrEqualTo(start)
+        .timestampGreaterThan(start, include: true)
         .count();
   }
 
   Future<int> countSince(DateTime from) {
     return _isar.intrusionEvents
         .where()
-        .timestampGreaterThanOrEqualTo(from)
+        .timestampGreaterThan(from, include: true)
         .count();
   }
 
@@ -123,12 +123,12 @@ class EventRepository {
     bool newestFirst = true,
     int? limit,
   }) {
-    var q = _isar.intrusionEvents.where();
-    if (from != null) q = q.timestampGreaterThanOrEqualTo(from);
-    if (to != null) q = q.timestampLessThanOrEqualTo(to);
-    if (newestFirst) q = q.sortByTimestampDesc();
-    if (limit != null) q = q.limit(limit);
-    return q.findAll();
+    var q = _isar.intrusionEvents.where().filter();
+    if (from != null) q = q.timestampGreaterThan(from, include: true);
+    if (to != null) q = q.timestampLessThan(to, include: true);
+    var sorted = newestFirst ? q.sortByTimestampDesc() : q;
+    if (limit != null) sorted = sorted.limit(limit);
+    return sorted.findAll();
   }
 
   /// Fast text search over local event fields. The result set is small enough

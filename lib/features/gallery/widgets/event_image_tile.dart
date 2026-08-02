@@ -92,7 +92,7 @@ class EventImageTile extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        '${DateTimeUtils.formatDate(event.timestamp.toLocal())}',
+                        DateTimeUtils.formatDate(event.timestamp.toLocal()),
                         style: const TextStyle(color: Colors.white, fontSize: 11),
                       ),
                     ),

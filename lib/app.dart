@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shieldcam/core/providers/providers.dart';
 import 'package:shieldcam/core/theme/app_theme.dart';
 import 'package:shieldcam/models/app_settings.dart';
 import 'package:shieldcam/navigation/app_router.dart';

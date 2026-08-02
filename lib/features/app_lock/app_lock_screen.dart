@@ -167,6 +167,7 @@ class _Keypad extends StatelessWidget {
               _Key(disabled: disabled, label: '0', onTap: () => onDigit('0')),
               _Key(
                 disabled: disabled,
+                label: '',
                 icon: Icons.backspace_outlined,
                 onTap: onBackspace,
               ),

@@ -68,7 +68,6 @@ class _PermissionRequestScreenState extends ConsumerState<PermissionRequestScree
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final platform = ref.watch(platformServiceProvider);
-    final monitoring = ref.watch(monitoringServiceProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Set up ShieldCam')),
